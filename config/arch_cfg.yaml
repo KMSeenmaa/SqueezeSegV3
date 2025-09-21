@@ -1,0 +1,106 @@
+################################################################################
+# training parameters for SemanticKITTI
+################################################################################
+train:
+  loss: "xentropy"       # must be either xentropy or iou
+  max_epochs: 150
+  lr: 0.01              # sgd learning rate
+  wup_epochs: 1         # warmup during first XX epochs (can be float)
+  momentum: 0.9         # sgd momentum
+  lr_decay: 0.995       # learning rate decay per epoch after initial cycle
+  w_decay: 0.0001       # weight decay
+  batch_size: 2         # batch size (reduce if GPU memory issues)
+  epsilon_w: 0.001      # class weight w = 1 / (content + epsilon_w)
+  workers: 4            # number of threads to get data
+  report_batch: 10      # every x batches, report loss
+  report_epoch: 1       # every x epochs, report validation set
+  show_scans: False     # show scans during training
+  save_scans: True      # save validation scans
+  save_summary: False   # Summary of weight histograms for tensorboard
+
+################################################################################
+# dataset parameters - SemanticKITTI specific
+################################################################################
+dataset:
+  sensor:
+    name: "HDL64"
+    type: "spherical"
+    fov_up: 3.0          # field of view up in degrees
+    fov_down: -25.0      # field of view down in degrees
+    img_prop:
+      width: 2048        # horizontal resolution of range image
+      height: 64         # vertical resolution (64 beams for HDL-64E)
+    img_means: #range,x,y,z,signal (statistics from SemanticKITTI)
+      - 12.12
+      - 10.88
+      - 0.23
+      - -1.04
+      - 0.21
+    img_stds: #range,x,y,z,signal
+      - 12.32
+      - 11.47
+      - 6.91
+      - 0.86
+      - 0.16
+  max_points: 150000     # max number of points per scan
+
+################################################################################
+# backbone parameters
+################################################################################
+backbone:
+  name: "darknet53"
+  input_depth:
+    range: True          # use range channel
+    xyz: True           # use xyz coordinates
+    remission: True     # use intensity/remission
+  dropout: 0.01
+  bn_d: 0.01           # batch norm decay
+  train: True          # train backbone?
+  extra:
+    layers: 53         # darknet53 layers
+
+################################################################################
+# decoder parameters
+################################################################################
+decoder:
+  name: "darknet"
+  dropout: 0.01
+  bn_d: 0.01
+  train: True          # train decoder?
+  extra:
+    layers: 21         # decoder layers
+
+################################################################################
+# head parameters for multi-scale outputs
+################################################################################
+head:
+  name: "segmentation"
+  train: True
+  dropout: 0.01
+
+################################################################################
+# Post-processing parameters
+################################################################################
+post:
+  CRF:
+    use: False         # CRF post-processing
+    train: False
+    params:
+      iter: 10
+      window: 1
+      compat: 10
+      gaussian: 1.0
+      bilateral: 10.0
+      bilateral_kernel_std:
+        x: 1.0
+        y: 1.0
+        z: 1.0
+        range: 1.0
+        remission: 1.0
+  knn:
+    use: False         # KNN post-processing
+    params:
+      knn: 5
+      search: 5
+      sigma: 1.0 
+      cutoff: 1.0

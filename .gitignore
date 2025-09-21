@@ -1,0 +1,5 @@
+*__pycache__
+src/tasks/__pycache__
+logs/
+*.pyc
+*.cpython-36*

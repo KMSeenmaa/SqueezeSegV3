@@ -1,12 +1,30 @@
-# first apt install python3-tk
-numpy
-torchvision
-matplotlib
-tensorflow
-scipy
-torch
-vispy
-opencv_python
-opencv_contrib_python
-Pillow
-PyYAML
+# Core PyTorch packages for CUDA 12.1 (Ada Generation GPU support)
+# Install PyTorch first with CUDA support:
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Scientific computing
+numpy>=1.21.0,<2.0.0
+scipy>=1.7.0
+
+# Image processing and visualization
+opencv-python>=4.6.0
+Pillow>=9.0.0
+matplotlib>=3.5.0
+
+# Configuration and logging
+PyYAML>=6.0
+tensorboard>=2.11.0
+
+# Progress bars and utilities
+tqdm>=4.65.0
+
+# Optional: Remove if not needed for your specific use case
+vispy>=0.12.0  # Only if you need 3D visualization
+opencv-contrib-python>=4.6.0  # Only if you need extra OpenCV modules
+
+# Note: tensorflow removed as it's not used in the SqueezeSegV3 training
+# If you need tensorflow for other purposes, add:
+tensorflow>=2.12.0
